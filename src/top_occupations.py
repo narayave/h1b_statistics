@@ -26,11 +26,10 @@ Output:
 
 '''
 
-
 import sys
+import operator
 from data_gatherer import DataGatherer
 from pprint import pprint
-
 
 OCCUPATION_INDEX = None
 
@@ -39,17 +38,58 @@ def collect_occupations(data):
 
     count_occupations = {}
 
-    for i in data:
-        occupation_title = data[i][OCCUPATION_INDEX]
+    for item in data:
+        occupation_title = item[OCCUPATION_INDEX]
 
         if occupation_title in count_occupations:
             count_occupations[occupation_title] += 1
         else:
             count_occupations[occupation_title] = 1
 
-    pprint(count_occupations)
+    return count_occupations
+
+
+def sort_top_occupations(all_occupations):
+
+    top_occupations = dict(sorted(all_occupations.iteritems(),
+                                  key=operator.itemgetter(1),
+                                  reverse=True)[:10])
+
+    top_occupations_list = [(key, value) for key, value in top_occupations.iteritems()]
+
+    top_occupations_list = sorted(top_occupations_list,
+                                  key=operator.itemgetter(1),
+                                  reverse=True)
+
+    return top_occupations_list
+
+def generate_output_list(all_occupations, total_certified_cases):
+
+    top_occupations = sort_top_occupations(all_occupations)
+
+    occupations_output = get_occupations_percentage(top_occupations,
+                                                    total_certified_cases)
+
+    return occupations_output
+
+def get_occupations_percentage(top_occupations_list, total_certified_count):
+
+    for i in xrange(len(top_occupations_list)):
+
+        percentage = ((top_occupations_list[i][1] * 1.0) / total_certified_count) * 100.00
+        percentage = "{0:0.1f}".format(percentage)
+
+        top_occupations_list[i] = (top_occupations_list[i][0],
+                                   top_occupations_list[i][1],
+                                   str(percentage)+'%')
+
+    pprint(top_occupations_list)
+
+    return top_occupations_list
+
 
 def generate_output_data():
+    """Should build output and make calls to the OutputWriter class"""
     pass
 
 
@@ -58,12 +98,8 @@ if __name__ == '__main__':
     filename = sys.argv[1]
 
     datag = DataGatherer()
+    certified_cases = datag.get_status_data(filename)
+    OCCUPATION_INDEX = datag.find_index(certified_cases[0], 'SOC_NAME')
 
-    data_raw = datag.get_raw_data(filename)
-    # datag.get_column_data(data_raw)
-
-    certified_cases = datag.get_certified_data(data_raw)
-
-    # OCCUPATION_INDEX = datag.find_index(data_raw[0], 'SOC_NAME')
-
-    # collect_occupations(data_raw[1:])
+    all_occupations = collect_occupations(certified_cases[1:])
+    generate_output_list(all_occupations, len(certified_cases))

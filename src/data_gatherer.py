@@ -13,6 +13,7 @@ Date:
 import csv
 from pprint import pprint   # TODO: Specify pprint is used for clean printing
 
+
 class DataGatherer(object):
     """
         The DataGatherer class focuses primarily on data manipulation
@@ -36,7 +37,7 @@ class DataGatherer(object):
             for row in reader:
                 data_raw.append(row)
 
-        print len(data_raw)
+        print "Raw data count - ", len(data_raw)
         return data_raw
 
     def find_index(self, header_row, title):
@@ -47,32 +48,56 @@ class DataGatherer(object):
         # STATUS
         # SOC_NAME
         # WORKSITE_STATE or LCA_CASE_WORKLOC1_STATE
-
-        # Working under the assumption that 'STATUS' typically used
-        # only for the Case Status
         tag_list = [tag for tag in header_row if title in tag]
         title_index = header_row.index(tag_list[0])
         return title_index
 
-    def get_certified_data(self, data_raw):
 
-        status_index = self.find_index(data_raw[0], 'STATUS')
+    def get_status_data(self, filename, status_title = 'CERTIFIED'):
+        """A file will get read, and records associated with status are
+         collected"""
 
-        for item in data_raw:
-            if 'CERTIFIED' not in item[status_index]:
-                data_raw.remove(item)
+        data_raw = []
+        print 'Getting data from ', filename
 
-        print len(data_raw)
+        # print csv.field_size_limit()
+        with open(filename, 'r') as file:
+            reader = csv.reader(file, delimiter=';')
+            self.headers = reader.next()
+            data_raw.append(self.headers)
 
+            status_index = self.find_index(self.headers, 'STATUS')
+
+            count = 0
+            for row in reader:
+
+                if status_title in row[status_index]:
+                    data_raw.append(row)
+                else:
+                    # print (row[0], row[status_index]),
+                    count += 1
+        # print "certified case count - ", len(data_raw), "No cert - ", count
         return data_raw
 
 
-    def get_column_data(self, data_raw):
+    def get_certified_data_from_raw(self, data_raw, status = 'STATUS'):
+        """
+            Goes over raw data and deletes
 
-        pprint(data_raw[1:3])
-        # print len(data_raw), self.headers
+        :param data_raw: Raw Data that has been scraped from the
+        :param status:
+        :return:
+        """
 
-    # def split_by_status(self, data_raw):
+        status_index = self.find_index(data_raw[0], status)
+        # count  = 1
+        for item in data_raw[1:]:
+            if 'CERTIFIED' not in item[status_index]:
+                # print (item[0], item[status_index]),
+                data_raw.remove(item)
 
+        print '\n'
+        print "certified data count - ", len(data_raw)
 
+        return data_raw
 
