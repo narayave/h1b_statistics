@@ -29,6 +29,7 @@ Output:
 import sys
 import operator
 from data_gatherer import DataGatherer
+from output_writer import OutputWriter
 from pprint import pprint
 
 OCCUPATION_INDEX = None
@@ -79,27 +80,36 @@ def get_occupations_percentage(top_occupations_list, total_certified_count):
         percentage = ((top_occupations_list[i][1] * 1.0) / total_certified_count) * 100.00
         percentage = "{0:0.1f}".format(percentage)
 
-        top_occupations_list[i] = (top_occupations_list[i][0],
+        top_occupations_list[i] = [top_occupations_list[i][0],
                                    top_occupations_list[i][1],
-                                   str(percentage)+'%')
+                                   str(percentage)+'%']
 
     pprint(top_occupations_list)
+
+    output_header = [['TOP_OCCUPATIONS', 'NUMBER_CERTIFIED_APPLICATIONS',
+                      'PERCENTAGE']]
+    top_occupations_list = output_header + top_occupations_list
 
     return top_occupations_list
 
 
-def generate_output_data():
+def generate_output_file(output_file, output_data):
     """Should build output and make calls to the OutputWriter class"""
-    pass
+
+    writer = OutputWriter(output_file)
+    writer.produce_output(output_data)
 
 
 if __name__ == '__main__':
 
-    filename = sys.argv[1]
+    input_file_name = sys.argv[1]
+    output_file_name = sys.argv[2]
 
     datag = DataGatherer()
-    certified_cases = datag.get_status_data(filename)
+    certified_cases = datag.get_status_data(input_file_name)
     OCCUPATION_INDEX = datag.find_index(certified_cases[0], 'SOC_NAME')
 
     all_occupations = collect_occupations(certified_cases[1:])
-    generate_output_list(all_occupations, len(certified_cases))
+    script_output = generate_output_list(all_occupations, len(certified_cases))
+
+    generate_output_file(output_file_name, script_output)

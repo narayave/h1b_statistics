@@ -21,11 +21,13 @@ class OutputWriter:
         self.filename = filename
 
 
-    def produce_output(self): #, output):
+    def produce_output(self, output):
         with open(self.filename, 'wb') as file:
             writer = csv.writer(file, delimiter=';')
-            writer.writerow(['TOP_OCCUPATIONS', 'NUMBER_CERTIFIED_APPLICATIONS',
-                             'PERCENTAGE'])
+            for item in output:
+                writer.writerow(item)
+
+        print 'DONE'
 
 
 if __name__ == '__main__':
