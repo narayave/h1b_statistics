@@ -29,6 +29,28 @@ Output:
 
 import sys
 from data_gatherer import DataGatherer
+from pprint import pprint
+
+
+OCCUPATION_INDEX = None
+
+def collect_occupations(data):
+    """Reads occupation titles and keeps count via a dict"""
+
+    count_occupations = {}
+
+    for i in data:
+        occupation_title = data[i][OCCUPATION_INDEX]
+
+        if occupation_title in count_occupations:
+            count_occupations[occupation_title] += 1
+        else:
+            count_occupations[occupation_title] = 1
+
+    pprint(count_occupations)
+
+def generate_output_data():
+    pass
 
 
 if __name__ == '__main__':
@@ -37,7 +59,11 @@ if __name__ == '__main__':
 
     datag = DataGatherer()
 
-    data_raw = datag.get_data(filename)
-    datag.get_column_data(data_raw)
+    data_raw = datag.get_raw_data(filename)
+    # datag.get_column_data(data_raw)
 
+    certified_cases = datag.get_certified_data(data_raw)
 
+    # OCCUPATION_INDEX = datag.find_index(data_raw[0], 'SOC_NAME')
+
+    # collect_occupations(data_raw[1:])
