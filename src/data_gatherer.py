@@ -53,7 +53,7 @@ class DataGatherer(object):
         return title_index
 
 
-    def get_status_data(self, filename, status_title = 'CERTIFIED'):
+    def get_status_data(self, filename, status_title='CERTIFIED'):
         """A file will get read, and records associated with status are
          collected"""
 
@@ -79,14 +79,13 @@ class DataGatherer(object):
         # print "certified case count - ", len(data_raw), "No cert - ", count
         return data_raw
 
-
-    def get_certified_data_from_raw(self, data_raw, status = 'STATUS'):
+    def get_raw_data_by_status(self, data_raw, status='STATUS'):
         """
-            Goes over raw data and deletes
+        Goes over raw data and removes the records with
 
-        :param data_raw: Raw Data that has been scraped from the
-        :param status:
-        :return:
+        :param data_raw: Raw Data that has been read in from CSV into a 2D list
+        :param status: Specifies to
+        :return: Returned to clean, raw data with
         """
 
         status_index = self.find_index(data_raw[0], status)
