@@ -35,22 +35,28 @@ from threading import Thread
 import time
 
 OCCUPATION_INDEX = None
+COUNT_OCCUPATIONS = {}
+
+def __dict_helper(item):
+    occupation_title = item[OCCUPATION_INDEX]
+
+    if occupation_title in COUNT_OCCUPATIONS:
+        COUNT_OCCUPATIONS[occupation_title] += 1
+    else:
+        COUNT_OCCUPATIONS[occupation_title] = 1
 
 
 def collect_occupations(data):
     """Reads occupation titles and keeps count via a dict"""
 
-    count_occupations = {}
+    # count_occupations = {}
 
     for item in data:
-        occupation_title = item[OCCUPATION_INDEX]
+        helper_thread = Thread(target=__dict_helper, args=(item,))
+        helper_thread.start()
+        # __dict_helper(item)
 
-        if occupation_title in count_occupations:
-            count_occupations[occupation_title] += 1
-        else:
-            count_occupations[occupation_title] = 1
-
-    return count_occupations
+    return COUNT_OCCUPATIONS
 
 
 def sort_top_occupations(all_occupations):
