@@ -41,46 +41,42 @@ def collect_occupations(data):
 
 
 def sort_top_occupations(all_occupations, req_number=REQUIRED_TOP_VALUES):
+    """
+        This function sorts the dictionary by occupation counts to get the top
+        occupations. The top values are converted to a list, and further sorted
+        alphabetically, in the case of equal counts.
 
+    :param all_occupations: Dictionary with count for all occupations
+    :param req_number: The required number of top values, default is set to 10,
+        globally
+    :return: Sorted list of top occupations and the total number
+    """
     top_occupations = dict(sorted(all_occupations.items(),
                                   key = lambda item: (item[1], item[0]),
                                   reverse=True)[:req_number])
-
     top_occupations_list = [(key, value) for key, value in \
                                 top_occupations.iteritems()]
-
     top_occupations_list = sorted(top_occupations_list,
                                   key=lambda item: (-item[1], item[0]))
 
     return top_occupations_list
 
-def generate_output_data(all_occupations, total_certified_cases):
-    """
-        There are 2 part involved. First, the top occupations are sorted.
-        Second, a call is made to get the percentages data, and ultimately the
-        output.
-
-    :param all_occupations: Dictionary with
-    :param total_certified_cases: Count of total number of certified cases
-    :return: Returns the approriate output for the occupations script
-    """
-    sorted_top_occupations = sort_top_occupations(all_occupations)
-    occupations_output = get_occupations_percentage(sorted_top_occupations,
-                                                    total_certified_cases)
-    return occupations_output
 
 def get_occupations_percentage(top_occupations_list, total_certified_count):
     """
+        From the occupations list, the percentage values are calculated. The
+        same 2d list is then updated to also hold the percentage value.
 
-    :param top_occupations_list:
-    :param total_certified_count:
-    :return:
+    :param top_occupations_list: The sorted list with the top occupations and
+        their respective counts.
+    :param total_certified_count: A count of all certified H1-B cases
+    :return: 2D list with occupation names, count, and percentage of total
+        certified cases
     """
     for i in xrange(len(top_occupations_list)):
-
-        percentage = ((top_occupations_list[i][1] * 100.0) / total_certified_count)
+        percentage = ((top_occupations_list[i][1] * 100.0) /
+                      total_certified_count)
         percentage = "{0:0.1f}".format(percentage)
-
         top_occupations_list[i] = [top_occupations_list[i][0],
                                    top_occupations_list[i][1],
                                    str(percentage)+'%']
@@ -90,6 +86,22 @@ def get_occupations_percentage(top_occupations_list, total_certified_count):
     top_occupations_list = output_header + top_occupations_list
 
     return top_occupations_list
+
+
+def generate_output_data(all_occupations, total_certified_cases):
+    """
+        There are 2 part involved. First, the top occupations are sorted.
+        Second, a call is made to get the percentages data, and ultimately the
+        output.
+
+    :param all_occupations: Dictionary with all cccupations and counts
+    :param total_certified_cases: Count of total number of certified cases
+    :return: The approriate output to be outputted to the output file
+    """
+    sorted_top_occupations = sort_top_occupations(all_occupations)
+    occupations_output = get_occupations_percentage(sorted_top_occupations,
+                                                    total_certified_cases)
+    return occupations_output
 
 
 def generate_output_file(output_file, output_data):
@@ -110,11 +122,12 @@ if __name__ == '__main__':
     input_file_name = sys.argv[1]
     output_file_name = sys.argv[2]
 
-    datagatherer = DataGatherer()
-    certified_cases = datagatherer.get_status_data(input_file_name)
+    datagatherer = DataGatherer(input_file_name)
+    certified_cases = datagatherer.get_status_data()
     OCCUPATION_INDEX = datagatherer.find_index(certified_cases[0], 'SOC_NAME')
 
     all_occupations = collect_occupations(certified_cases[1:])
-    script_output = generate_output_data(all_occupations, len(certified_cases)-1)
+    script_output = generate_output_data(all_occupations,
+                                         len(certified_cases)-1)
 
     generate_output_file(output_file_name, script_output)

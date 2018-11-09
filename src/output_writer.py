@@ -21,6 +21,13 @@ class OutputWriter:
         self.filename = filename
 
     def produce_output(self, output):
+        """
+           This function takes the incoming data and puts it in a .txt file.
+
+        :param output: A 2d list holding data that needs to be outputted to a
+        file.
+        :return: None
+        """
         with open(self.filename, 'wb') as file:
             writer = csv.writer(file, delimiter=';')
             for item in output:
