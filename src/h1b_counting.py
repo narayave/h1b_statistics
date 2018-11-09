@@ -18,6 +18,8 @@ import time
 from threading import Thread
 
 def get_occupations_trend(input_file_name, output_file_name):
+    """Makes use of the FindTrends class to get results for the top 10
+     occupations"""
 
     field_names = ["SOC_NAME"]
     output_header = [['TOP_OCCUPATIONS', 'NUMBER_CERTIFIED_APPLICATIONS',
@@ -27,10 +29,9 @@ def get_occupations_trend(input_file_name, output_file_name):
 
     datagatherer = DataGatherer(input_file_name)
     certified_cases = datagatherer.get_status_data()
-    trend.state_index_finder(datagatherer, certified_cases[0])
+    trend.fieldname_index_finder(datagatherer, certified_cases[0])
 
     all_trend_counts = trend.collect_trend(certified_cases[1:])
-    # all_occupations = collect_occupations(certified_cases[1:])
     script_output = trend.generate_output_data(all_trend_counts,
                                          len(certified_cases)-1)
 
@@ -38,7 +39,8 @@ def get_occupations_trend(input_file_name, output_file_name):
 
 
 def get_states_trend(input_file_name, output_file_name):
-
+    """Makes use of the FindTrends class to get results for the top 10 states.
+    """
 
     field_names = ["WORKSITE_STATE", "LCA_CASE_WORKLOC1_STATE"]
     output_header = [['TOP_STATES', 'NUMBER_CERTIFIED_APPLICATIONS',
@@ -48,10 +50,9 @@ def get_states_trend(input_file_name, output_file_name):
 
     datagatherer = DataGatherer(input_file_name)
     certified_cases = datagatherer.get_status_data()
-    trend.state_index_finder(datagatherer, certified_cases[0])
+    trend.fieldname_index_finder(datagatherer, certified_cases[0])
 
     all_trend_counts = trend.collect_trend(certified_cases[1:])
-    # all_occupations = collect_occupations(certified_cases[1:])
     script_output = trend.generate_output_data(all_trend_counts,
                                          len(certified_cases)-1)
 
