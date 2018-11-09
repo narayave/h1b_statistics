@@ -20,17 +20,9 @@ class OutputWriter:
     def __init__(self, filename):
         self.filename = filename
 
-
     def produce_output(self, output):
         with open(self.filename, 'wb') as file:
             writer = csv.writer(file, delimiter=';')
             for item in output:
                 writer.writerow(item)
 
-        print 'DONE'
-
-
-if __name__ == '__main__':
-
-    ow = OutputWriter('../output/top_10.txt')
-    ow.produce_output()

@@ -4,4 +4,5 @@
 #
 #python ./src/h1b_counting.py ./input/h1b_input.csv ./output/top_10_occupations.txt ./output/top_10_states.txt
 
-python ./src/top_occupations.py ./input/H1B_FY_2014.csv ./output/top_10_occupations.txt
+python ./src/top_occupations.py ./input/h1b_input.csv ./output/top_10_occupations.txt
+python ./src/top_states.py ./input/h1b_input.csv ./output/top_10_states.txt
